@@ -9,7 +9,7 @@ public class Node {
     private float f;
     private Status status;
     private Node parent;
-    private ArrayList<Node> kids = new ArrayList<Node>();
+    private ArrayList<Node> kids = new ArrayList<>();
 
     public Node(State state, float g, float h) {
         this.state = state;
@@ -66,19 +66,23 @@ public class Node {
         setStatus(Status.CLOSED);
     }
 
-    public SearchNode getParent() {
+    public Node getParent() {
         return parent;
     }
 
-    public void setParent(SearchNode parent) {
+    public void setParent(Node parent) {
         this.parent = parent;
     }
 
-    public ArrayList<SearchNode> getKids() {
+    public ArrayList<Node> getKids() {
         return kids;
     }
 
-    public void setKids(ArrayList<SearchNode> kids) {
+    public void setKids(ArrayList<Node> kids) {
         this.kids = kids;
+    }
+
+    public enum Status {
+        OPEN, CLOSED
     }
 }
