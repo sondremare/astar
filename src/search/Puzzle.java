@@ -1,7 +1,5 @@
 package search;
 
-import java.util.ArrayList;
-
 public interface Puzzle {
 
     abstract Heuristic getHeuristic();

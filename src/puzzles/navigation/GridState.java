@@ -2,22 +2,22 @@ package puzzles.navigation;
 
 import search.State;
 
-import java.util.ArrayList;
-
 public class GridState implements State {
-    private ArrayList<ArrayList<Character>> mapRepresentation;
+    private char[][] mapRepresentation;
     private int height;
     private int width;
     private Position start;
     private Position goal;
     private Position current;
-    private static final char BLOCKED_NODE = 'B'; //TODO
+    public static final char START = 'S';
+    public static final char GOAL = 'G';
+    public static final char BARRIER = 'B';
 
     public GridState(GridState gridState) {
         this(gridState.getMapRepresentation(), gridState.getHeight(), gridState.getWidth(), gridState.getCurrentPosition(), gridState.getGoalPosition(), gridState.getStartPosition());
     }
 
-    public GridState(ArrayList<ArrayList<Character>> mapRepresentation, int height, int width, Position currentPosition, Position goalPosition, Position startPosition) {
+    public GridState(char[][] mapRepresentation, int height, int width, Position currentPosition, Position goalPosition, Position startPosition) {
         this.mapRepresentation = mapRepresentation;
         this.height = height;
         this.width = width;
@@ -42,7 +42,7 @@ public class GridState implements State {
         this.current = current;
     }
 
-    public ArrayList<ArrayList<Character>> getMapRepresentation() {
+    public char[][] getMapRepresentation() {
         return mapRepresentation;
     }
 
@@ -79,7 +79,7 @@ public class GridState implements State {
 
 
     public boolean isBlocked(Position position) {
-        return mapRepresentation.get(position.getX()).get(position.getY()) == BLOCKED_NODE;
+        return mapRepresentation[position.getX()][position.getY()] == BARRIER;
     }
 
     public boolean isPositionWithinBounds(Position position) {

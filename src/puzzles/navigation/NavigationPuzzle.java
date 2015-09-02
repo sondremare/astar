@@ -2,13 +2,18 @@ package puzzles.navigation;
 
 import search.*;
 
-import java.util.ArrayList;
-
 public class NavigationPuzzle implements Puzzle {
     private ManhattanDistance heuristic;
     private NavigationResultFunction resultFunction;
     private GridState state;
     private NavigationGoalTest goalTest;
+
+    public NavigationPuzzle(GridState state) {
+        this.state = state;
+        this.heuristic = new ManhattanDistance();
+        this.resultFunction = new NavigationResultFunction();
+        this.goalTest = new NavigationGoalTest();
+    }
 
     @Override
     public Heuristic getHeuristic() {

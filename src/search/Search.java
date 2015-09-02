@@ -1,9 +1,17 @@
 package search;
 
-import java.util.*;
+import gui.GUI;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Search {
     private Puzzle puzzle;
+    private ObservableList<Node> observableClosedList;
+    private ArrayList<Node> closed = new ArrayList<Node>();
+    private Node currentNode;
 
     public Search(Puzzle puzzle) {
         this.puzzle = puzzle;
@@ -11,6 +19,21 @@ public class Search {
 
     public Puzzle getPuzzle() {
         return this.puzzle;
+    }
+
+
+    public Node getCurrentNode() {
+        return currentNode;
+    }
+
+    /** Helper method for real-time drawing the GUI */
+    public ObservableList<Node> getObservableClosedList() {
+        return observableClosedList;
+    }
+
+    /** Helper method for real-time drawing the GUI */
+    public void initObservableClosedNodeList() {
+        observableClosedList = FXCollections.observableArrayList(closed);
     }
 
     /** Used to attach a node to a given parent, and calculate its G, H and F-values */
@@ -58,14 +81,13 @@ public class Search {
     }
 
     /** This function tries to find a solution to a given puzzle using search */
-    public void search() throws Exception {
+    public void search(GUI gui) {
 
         /** Initialization of the state, lists, and search node */
         Puzzle puzzle = getPuzzle();
         State state = puzzle.getState();
         state.initialize();
         HashMap<Integer, State> uniqueStates = new HashMap<>();
-        ArrayList<Node> closed = new ArrayList<Node>();
         ArrayList<Node> open = new ArrayList<Node>();
         Node initialNode = new Node(state, 0, puzzle.getHeuristic().calculateHeuristicValue(state));
         initialNode.open();
@@ -73,26 +95,20 @@ public class Search {
         uniqueStates.put(state.hashCode(), state);
 
         while (!open.isEmpty()) {
-            Node currentNode = popNode(open);
+            currentNode = popNode(open);
             open.remove(currentNode);
             currentNode.close();
             closed.add(currentNode);
+            observableClosedList.add(currentNode);
+
+            /** Sleeping to make viewing the GUI visible to the human eye */
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {}
 
             /** We check if the current search node is in the desired goal state */
             if (puzzle.getGoalTest().isGoalState(currentNode.getState())) {
-                System.out.println("DONE");
-                /*Node parent = currentNode;
-                ArrayList<Position> solutionChain = new ArrayList<Position>();*/
-                /** We iterate backwards from the goal state via the nodes' parents to find a chain of nodes
-                 * which is the solution to the puzzle
-                 */
-               /* while (parent != null) {
-                    solutionChain.add(solutionChain.size(), parent.getState().getCurrentPosition());
-                    parent = parent.getParent();
-                }*/
-
-                /** After the solution is found, we draw it visually */
-                /*GUI.createAndShowGUI(currentNode.getState().getState(), solutionChain, open, closed, isShouldDrawOpenAndClosedNodes());*/
+                //TODO ADD INFO ABOUT CLOSED, OPEN, AND SOLUTION LENGTH
                 break;
             }
 
