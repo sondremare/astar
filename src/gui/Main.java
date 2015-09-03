@@ -6,9 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -17,8 +15,7 @@ import puzzles.navigation.GridState;
 import puzzles.navigation.NavigationPuzzle;
 import puzzles.navigation.gui.NavigationGUI;
 import puzzles.navigation.io.file.GridReader;
-import search.Node;
-import search.Search;
+import search.*;
 
 import java.io.File;
 
@@ -42,11 +39,24 @@ public class Main extends Application {
         sleepTimeInput.setMaxWidth(50);
         sleepTimeInput.setText("50");
 
+        ToggleGroup searchType = new ToggleGroup();
+        RadioButton bestFirst = new RadioButton("Best-First");
+        RadioButton depthFirst = new RadioButton("Depth-First");
+        RadioButton breadthFirst = new RadioButton("Breadth-First");
+        bestFirst.setToggleGroup(searchType);
+        depthFirst.setToggleGroup(searchType);
+        breadthFirst.setToggleGroup(searchType);
+        bestFirst.setSelected(true);
+
+
         GridPane controlPane = new GridPane();
         controlPane.add(openFileButton, 0, 0);
-        controlPane.add(startSearchButton, 1, 0);
-        controlPane.add(sleepTimeLabel, 2 ,0);
-        controlPane.add(sleepTimeInput, 3, 0);
+        controlPane.add(bestFirst, 0, 1);
+        controlPane.add(depthFirst, 0, 2);
+        controlPane.add(breadthFirst, 0, 3);
+        controlPane.add(sleepTimeLabel, 0, 4);
+        controlPane.add(sleepTimeInput, 1, 4);
+        controlPane.add(startSearchButton, 0, 5);
 
         final GridPane gridPane = new GridPane();
         gridPane.setPrefSize(600, 800);
@@ -81,8 +91,18 @@ public class Main extends Application {
         startSearchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                if (search != null) {
+                    search.stop();
+                }
                 Search.sleepTime = Integer.parseInt(sleepTimeInput.getText());
-                search = new Search(puzzle);
+                if (bestFirst.isSelected()) {
+                    search = new BestFirstSearch(puzzle);
+                } else if (depthFirst.isSelected()) {
+                    search = new DepthFirstSearch(puzzle);
+                } else if (breadthFirst.isSelected()) {
+                    search = new BreadthFirstSearch(puzzle);
+                }
+
                 search.initObservableClosedNodeList();
                 search.getObservableClosedList().addListener(new ListChangeListener<Node>() {
                     @Override

@@ -14,9 +14,14 @@ public class Search {
     private Node currentNode;
 
     public static int sleepTime = 5;
+    public static boolean shouldStop = false;
 
     public Search(Puzzle puzzle) {
         this.puzzle = puzzle;
+    }
+
+    public void stop() {
+        shouldStop = true;
     }
 
     public Puzzle getPuzzle() {
@@ -83,7 +88,8 @@ public class Search {
     }
 
     /** This function tries to find a solution to a given puzzle using search */
-    public void search(GUI gui) {
+    public boolean search(GUI gui) {
+        shouldStop = false;
 
         /** Initialization of the state, lists, and search node */
         Puzzle puzzle = getPuzzle();
@@ -97,6 +103,9 @@ public class Search {
         uniqueStates.put(state.hashCode(), state);
 
         while (!open.isEmpty()) {
+            if (shouldStop) {
+                return false;
+            }
             currentNode = popNode(open);
             open.remove(currentNode);
             currentNode.close();
@@ -157,5 +166,6 @@ public class Search {
                 }
             }
         }
+        return true;
     }
 }

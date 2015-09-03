@@ -2,14 +2,14 @@ package search;
 
 import java.util.ArrayList;
 
-public class BreadthFirstSearch extends Search{
+public class DepthFirstSearch extends Search{
 
-    public BreadthFirstSearch(Puzzle puzzle) {
+    public DepthFirstSearch(Puzzle puzzle) {
         super(puzzle);
     }
 
     @Override
     public Node popNode(ArrayList<Node> nodes) {
-        return nodes.get(0);
+        return nodes.get(nodes.size() - 1);
     }
 }
