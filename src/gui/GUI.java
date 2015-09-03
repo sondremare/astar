@@ -1,10 +1,10 @@
 package gui;
 
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import search.Search;
 
 public interface GUI {
 
-    abstract AnchorPane initGUI();
+    abstract GridPane initGUI();
     abstract void update(Search search);
 }

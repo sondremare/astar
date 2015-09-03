@@ -10,7 +10,9 @@ import java.util.HashMap;
 public class Search {
     private Puzzle puzzle;
     private ObservableList<Node> observableClosedList;
-    private ArrayList<Node> closed = new ArrayList<Node>();
+    private ObservableList<Node> observableOpenList;
+    private ArrayList<Node> closed = new ArrayList<>();
+    private ArrayList<Node> open = new ArrayList<>();
     private Node currentNode;
 
     public static int sleepTime = 5;
@@ -38,9 +40,14 @@ public class Search {
         return observableClosedList;
     }
 
+    public ObservableList<Node> getObservableOpenList() {
+        return observableOpenList;
+    }
+
     /** Helper method for real-time drawing the GUI */
-    public void initObservableClosedNodeList() {
+    public void initObservableLists() {
         observableClosedList = FXCollections.observableArrayList(closed);
+        observableOpenList = FXCollections.observableArrayList(open);
     }
 
     /** Used to attach a node to a given parent, and calculate its G, H and F-values */
@@ -96,10 +103,10 @@ public class Search {
         State state = puzzle.getState();
         state.initialize();
         HashMap<Integer, State> uniqueStates = new HashMap<>();
-        ArrayList<Node> open = new ArrayList<Node>();
         Node initialNode = new Node(state, 0, puzzle.getHeuristic().calculateHeuristicValue(state));
         initialNode.open();
         open.add(initialNode);
+        observableOpenList.add(initialNode);
         uniqueStates.put(state.hashCode(), state);
 
         while (!open.isEmpty()) {
@@ -119,7 +126,6 @@ public class Search {
 
             /** We check if the current search node is in the desired goal state */
             if (puzzle.getGoalTest().isGoalState(currentNode.getState())) {
-                //TODO ADD INFO ABOUT CLOSED, OPEN, AND SOLUTION LENGTH
                 break;
             }
 
@@ -154,6 +160,7 @@ public class Search {
                     AttachAndEval(successor, currentNode);
                     successor.open();
                     open.add(successor);
+                    observableOpenList.add(successor);
                     /** We check if the current search node is a "better" parent node to the successor node
                      * than that previous parent node */
                 } else if (currentNode.getG() + successor.getState().getGCost() < successor.getG()) {

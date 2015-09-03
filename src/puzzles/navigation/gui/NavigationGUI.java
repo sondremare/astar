@@ -1,9 +1,9 @@
 package puzzles.navigation.gui;
 
 import gui.GUI;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import puzzles.navigation.GridState;
 import puzzles.navigation.NavigationPuzzle;
@@ -26,24 +26,38 @@ public class NavigationGUI implements GUI{
     private static ArrayList<ImageView> solutionReference;
     private final static int CELL_WIDTH = 30;
     private final static int CELL_HEIGHT = 30;
-
+    private static Label openCountLabel;
+    private static Label closedCountLabel;
+    private static Label solutionLengthLabel;
 
     public NavigationGUI(NavigationPuzzle puzzle) {
         this.puzzle = puzzle;
     }
 
     @Override
-    public AnchorPane initGUI() {
-        AnchorPane root = new AnchorPane();
-        root.setPrefSize(600, 800);
+    public GridPane initGUI() {
+        GridPane root = new GridPane();
+        root.setPrefSize(600, 1000);
         GridState state = (GridState) puzzle.getState();
         clearGrid();
+
+        GridPane infoGrid = new GridPane();
+        infoGrid.setPrefSize(600, 200);
+        infoGrid.setHgap(10);
+        closedCountLabel = new Label("Closed: ");
+        openCountLabel = new Label("Open: ");
+        solutionLengthLabel = new Label("Solution: ");
+        infoGrid.add(closedCountLabel, 0, 0);
+        infoGrid.add(openCountLabel, 1, 0);
+        infoGrid.add(solutionLengthLabel, 2, 0);
+
         referenceArray = new ImageView[state.getHeight()][state.getWidth()];
         navigationGrid = new GridPane();
         navigationGrid.setPrefSize(600, 800);
         navigationGrid.setGridLinesVisible(true);
         updateImages(state);
-        root.getChildren().add(navigationGrid);
+        root.add(infoGrid, 0, 0);
+        root.add(navigationGrid, 0, 1);
         return root;
     }
 
@@ -75,6 +89,7 @@ public class NavigationGUI implements GUI{
                 navigationGrid.add(imageView, xPos, yPos);
                 solutionReference.add(imageView);
             }
+            updateLabels(search, solutionChain.size());
         }
     }
 
@@ -102,6 +117,12 @@ public class NavigationGUI implements GUI{
                 referenceArray[i][j] = imageView;
             }
         }
+    }
+
+    public void updateLabels(Search search, int solutionSize) {
+        openCountLabel.setText("Open: "+search.getObservableOpenList().size());
+        closedCountLabel.setText("Closed: "+search.getObservableClosedList().size());
+        solutionLengthLabel.setText("Solution: "+solutionSize);
     }
 
     public void clearGrid() {

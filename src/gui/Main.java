@@ -78,8 +78,8 @@ public class Main extends Application {
                 if (state != null) {
                     puzzle = new NavigationPuzzle(state);
                     gui = new NavigationGUI(puzzle);
-                    AnchorPane anchorPane = gui.initGUI();
-                    gridPane.add(anchorPane, 0, 1);
+                    GridPane guiRoot = gui.initGUI();
+                    gridPane.add(guiRoot, 0, 1);
                     startSearchButton.setDisable(false);
                 } else {
                     startSearchButton.setDisable(true);
@@ -103,7 +103,7 @@ public class Main extends Application {
                     search = new BreadthFirstSearch(puzzle);
                 }
 
-                search.initObservableClosedNodeList();
+                search.initObservableLists();
                 search.getObservableClosedList().addListener(new ListChangeListener<Node>() {
                     @Override
                     public void onChanged(Change<? extends Node> c) {
@@ -115,6 +115,17 @@ public class Main extends Application {
                         });
                     }
                 });
+                search.getObservableOpenList().addListener((new ListChangeListener<Node>() {
+                    @Override
+                    public void onChanged(Change<? extends Node> c) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                gui.update(search);
+                            }
+                        });
+                    }
+                }));
 
                 new Thread(new Runnable() {
 
