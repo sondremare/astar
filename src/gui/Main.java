@@ -7,6 +7,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -35,9 +37,16 @@ public class Main extends Application {
         Button startSearchButton = new Button("Start Search");
         startSearchButton.setDisable(true);
 
+        Label sleepTimeLabel = new Label ("Sleep (ms): ");
+        final TextField sleepTimeInput = new TextField();
+        sleepTimeInput.setMaxWidth(50);
+        sleepTimeInput.setText("50");
+
         GridPane controlPane = new GridPane();
         controlPane.add(openFileButton, 0, 0);
         controlPane.add(startSearchButton, 1, 0);
+        controlPane.add(sleepTimeLabel, 2 ,0);
+        controlPane.add(sleepTimeInput, 3, 0);
 
         final GridPane gridPane = new GridPane();
         gridPane.setPrefSize(600, 800);
@@ -72,6 +81,7 @@ public class Main extends Application {
         startSearchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Search.sleepTime = Integer.parseInt(sleepTimeInput.getText());
                 search = new Search(puzzle);
                 search.initObservableClosedNodeList();
                 search.getObservableClosedList().addListener(new ListChangeListener<Node>() {

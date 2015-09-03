@@ -13,6 +13,8 @@ public class Search {
     private ArrayList<Node> closed = new ArrayList<Node>();
     private Node currentNode;
 
+    public static int sleepTime = 5;
+
     public Search(Puzzle puzzle) {
         this.puzzle = puzzle;
     }
@@ -48,11 +50,11 @@ public class Search {
     /** If a "better" parent node is found for a given node, we set this new "better" node as parent,
      * recalculate the F and G values. This is done recursively for all nodes' children, and their children.
      */
-    public void PropagatePathImprovements(Node successor) {
-        for (Node kid : successor.getKids()) {
-            if (successor.getG() + kid.getState().getGCost() < kid.getG()) {
-                kid.setParent(successor);
-                kid.setG(successor.getG() + kid.getState().getGCost());
+    public void PropagatePathImprovements(Node parent) {
+        for (Node kid : parent.getKids()) {
+            if (parent.getG() + kid.getState().getGCost() < kid.getG()) {
+                kid.setParent(parent);
+                kid.setG(parent.getG() + kid.getState().getGCost());
                 kid.setF(kid.getG() + kid.getH());
                 PropagatePathImprovements(kid);
             }
@@ -103,7 +105,7 @@ public class Search {
 
             /** Sleeping to make viewing the GUI visible to the human eye */
             try {
-                Thread.sleep(50);
+                Thread.sleep(sleepTime);
             } catch (InterruptedException e) {}
 
             /** We check if the current search node is in the desired goal state */
@@ -121,16 +123,21 @@ public class Search {
                 if (uniqueStates.get(successor.getState().hashCode()) == null) {
                     uniqueStates.put(successor.getState().hashCode(), state);
                 } else {
+                    boolean found = false;
                     for (Node closedNode : closed) {
                         if (closedNode.getState().equals(successor.getState())) {
                             successor = closedNode;
+                            found = true;
                         }
                     }
-                    for (Node openNode : open) {
-                        if (openNode.getState().equals(successor.getState())) {
-                            successor = openNode;
+                    if (!found) {
+                        for (Node openNode : open) {
+                            if (openNode.getState().equals(successor.getState())) {
+                                successor = openNode;
+                            }
                         }
                     }
+
                 }
                 currentNode.getKids().add(successor);
 
